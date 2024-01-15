@@ -3,14 +3,14 @@ import 'flatpickr/dist/flatpickr.min.css';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
+const startButton = document.querySelector('[data-start]');
+let timerActive = false;
+const input = document.querySelector('#datetime-picker');
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onOpen(selectedDates, dateStr, instance) {
-    instance.clear(); // Очищаємо вибрану дату при відкритті календаря
-  },
   onClose(selectedDates) {
     const userSelectedDate = selectedDates[0];
     const now = new Date();
@@ -20,15 +20,14 @@ const options = {
         title: 'Error',
         message: 'Please choose a date in the future',
       });
-      document.querySelector('[data-start]').disabled = true;
+      startButton.disabled = true;
     } else {
-      iziToast.hide();
-      document.querySelector('[data-start]').disabled = false;
+      startButton.disabled = false;
     }
   },
 };
 
-const datePicker = flatpickr('#datetime-picker', options);
+const datePicker = flatpickr(input, options);
 
 function addLeadingZero(value) {
   return value.toString().padStart(2, '0');
@@ -45,6 +44,8 @@ function updateTimer() {
       title: 'Success',
       message: 'Timer reached zero!',
     });
+    startButton.disabled = false;
+    input.disabled = false;
     return;
   }
 
@@ -73,7 +74,20 @@ function convertMs(ms) {
 
 let timerInterval;
 
-document.querySelector('[data-start]').addEventListener('click', function () {
-  timerInterval = setInterval(updateTimer, 1000);
-  this.disabled = true;
+startButton.addEventListener('click', function () {
+  const userSelectedDate = datePicker.selectedDates[0];
+
+  // Перевіряємо, чи вибрана дійсна дата і таймер неактивний
+  if (userSelectedDate && !timerActive) {
+    timerInterval = setInterval(updateTimer, 1000);
+    this.disabled = true;
+    timerActive = true; // Встановлюємо прапорець активності таймера
+  } else if (!userSelectedDate) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Please choose a valid future date before starting the timer.',
+    });
+  } else {
+    console.log('Timer is already active.');
+  }
 });

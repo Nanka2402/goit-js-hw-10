@@ -1,6 +1,6 @@
-// Описаний у документації
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
+
 const form = document.querySelector('.form');
 
 form.addEventListener('submit', function (event) {
@@ -27,18 +27,17 @@ form.addEventListener('submit', function (event) {
     }, delay);
   });
 
-  promise.then(
-    result => {
+  promise
+    .then(result => {
       iziToast.success({
         title: 'Success',
         message: `Fulfilled promise in ${result}ms`,
       });
-    },
-    result => {
+    })
+    .catch(result => {
       iziToast.error({
         title: 'Error',
         message: `Rejected promise in ${result}ms`,
       });
-    }
-  );
+    });
 });
