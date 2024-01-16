@@ -5,6 +5,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 const startButton = document.querySelector('[data-start]');
 let timerActive = false;
+let timerIntervalId;
 const input = document.querySelector('#datetime-picker');
 const options = {
   enableTime: true,
@@ -26,8 +27,17 @@ const options = {
     }
   },
 };
-
-const datePicker = flatpickr(input, options);
+let endTime = new Date(); //Оновлюємо присвоєння значення
+const datePicker = flatpickr(input, {
+  options,
+  onChange(selectedDates) {
+    clearInterval(timerIntervalId);
+    startButton.disabled = false;
+    timerActive = false;
+    endTime = selectedDates[0]; //Оновлюємо присвоєне значення
+    updateTimer(); // Додаємо оновлення таймера при зміні дати
+  },
+});
 
 function addLeadingZero(value) {
   return value.toString().padStart(2, '0');
@@ -35,17 +45,18 @@ function addLeadingZero(value) {
 
 function updateTimer() {
   const now = new Date();
-  const userSelectedDate = datePicker.selectedDates[0];
+  const userSelectedDate = endTime;
   const timeDiff = userSelectedDate - now;
 
   if (timeDiff <= 0) {
-    clearInterval(timerInterval);
+    clearInterval(timerIntervalId);
     iziToast.success({
       title: 'Success',
       message: 'Timer reached zero!',
     });
     startButton.disabled = false;
     input.disabled = false;
+    timerActive = false; // Додаємо скидання прапорця
     return;
   }
 
@@ -72,15 +83,14 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-let timerInterval;
-
 startButton.addEventListener('click', function () {
-  const userSelectedDate = datePicker.selectedDates[0];
+  const userSelectedDate = endTime;
 
   // Перевіряємо, чи вибрана дійсна дата і таймер неактивний
   if (userSelectedDate && !timerActive) {
-    timerInterval = setInterval(updateTimer, 1000);
+    timerIntervalId = setInterval(updateTimer, 1000);
     this.disabled = true;
+    input.disabled = true; //Вимикаємо поле вводу
     timerActive = true; // Встановлюємо прапорець активності таймера
   } else if (!userSelectedDate) {
     iziToast.error({

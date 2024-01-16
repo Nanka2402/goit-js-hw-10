@@ -10,10 +10,10 @@ form.addEventListener('submit', function (event) {
   const stateInputs = form.querySelectorAll('input[name="state"]');
   const selectedState = Array.from(stateInputs).find(input => input.checked);
 
-  if (!delayInput || !selectedState) {
-    console.error('Invalid form input');
-    return;
-  }
+  // if (!delayInput || !selectedState) {
+  //   console.error('Invalid form input');
+  //   return;
+  // }
 
   const delay = parseInt(delayInput.value, 10);
 
@@ -28,16 +28,16 @@ form.addEventListener('submit', function (event) {
   });
 
   promise
-    .then(result => {
+    .then(delay => {
       iziToast.success({
         title: 'Success',
-        message: `Fulfilled promise in ${result}ms`,
+        message: `✅ Fulfilled promise in ${delay}ms`,
       });
     })
-    .catch(result => {
+    .catch(delay => {
       iziToast.error({
         title: 'Error',
-        message: `Rejected promise in ${result}ms`,
+        message: `❌ Rejected promise in ${delay}ms`,
       });
     });
 });
