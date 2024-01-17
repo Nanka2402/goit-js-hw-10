@@ -10,11 +10,6 @@ form.addEventListener('submit', function (event) {
   const stateInputs = form.querySelectorAll('input[name="state"]');
   const selectedState = Array.from(stateInputs).find(input => input.checked);
 
-  // if (!delayInput || !selectedState) {
-  //   console.error('Invalid form input');
-  //   return;
-  // }
-
   const delay = parseInt(delayInput.value, 10);
 
   const promise = new Promise((resolve, reject) => {
