@@ -7,6 +7,7 @@ const startButton = document.querySelector('[data-start]');
 let timerActive = false;
 let timerIntervalId;
 const input = document.querySelector('#datetime-picker');
+let endTime;
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -24,10 +25,11 @@ const options = {
       startButton.disabled = true;
     } else {
       startButton.disabled = false;
+      endTime = userSelectedDate; //Оновлюємо endTime з обраною датою
     }
   },
 };
-let endTime = new Date(); //Оновлюємо присвоєння значення
+
 const datePicker = flatpickr(input, options);
 
 function addLeadingZero(value) {
@@ -75,15 +77,12 @@ function convertMs(ms) {
 }
 
 startButton.addEventListener('click', function () {
-  const userSelectedDate = endTime;
-
-  if (userSelectedDate && userSelectedDate > new Date() && !timerActive) {
-    input.disabled = true; // Деактивуємо поле вводу під час таймера
+  if (!timerActive && endTime && endTime > new Date()) {
+    input.disabled = true;
     timerIntervalId = setInterval(updateTimer, 1000);
     this.disabled = true;
     timerActive = true;
-    // Код для початку таймера
-  } else if (!userSelectedDate || userSelectedDate <= new Date()) {
+  } else if (!endTime || endTime <= new Date()) {
     iziToast.error({
       title: 'Error',
       message: 'Please choose a valid future date before starting the timer.',
